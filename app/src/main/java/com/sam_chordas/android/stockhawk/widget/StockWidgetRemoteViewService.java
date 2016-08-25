@@ -76,7 +76,14 @@ public class StockWidgetRemoteViewService extends RemoteViewsService {
                 RemoteViews views = new RemoteViews(getPackageName(),
                         R.layout.widget_view);
                 //set remote view
+                views.setTextViewText(R.id.stock_symbol, data.getString(SYMBOL_COLUMN));
+                views.setTextViewText(R.id.bid_price, data.getString(BIDPRICE_COLUMN));
+                if (data.getInt(ISUP_COLUMN) == 1){
+                    views.setInt(R.id.change, "setBackgroundColor", getResources().getDrawable(R.drawable.percent_change_pill_green));
+                } else {
 
+                }
+                views.setTextViewText(R.id.change, data.getString(PERCENT_CHANGE_COLUMN));
 
                 return views;
             }
