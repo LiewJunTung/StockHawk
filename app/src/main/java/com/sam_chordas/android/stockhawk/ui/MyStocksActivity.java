@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,14 +37,25 @@ import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
+import com.sam_chordas.android.stockhawk.utils.StockUtils;
 
-public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, SharedPreferences.OnSharedPreferenceChangeListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
 
     private static final int CURSOR_LOADER_ID = 0;
+    private static final String[] MAIN_COLUMNS = {
+            QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
+            QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP
+    };
+    private final static int ID_COLUMN = 0;
+    private final static int SYMBOL_COLUMN = 1;
+    private final static int BIDPRICE_COLUMN = 2;
+    private final static int PERCENT_CHANGE_COLUMN = 3;
+    private final static int CHANGE_COLUMN = 4;
+    private final static int ISUP_COLUMN = 5;
     boolean isConnected;
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -88,6 +101,10 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                     public void onItemClick(View v, int position) {
                         //TODO:
                         // do something on item click
+                        Intent intent = new Intent(MyStocksActivity.this, StockDetailActivity.class);
+                        mCursor.moveToPosition(position);
+                        intent.putExtra(StockDetailActivity.SELECTED_SYMBOL, mCursor.getString(SYMBOL_COLUMN));
+                        startActivity(intent);
                     }
                 }));
         recyclerView.setAdapter(mCursorAdapter);
@@ -99,7 +116,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             @Override
             public void onClick(View v) {
                 if (isConnected) {
-                    new MaterialDialog.Builder(mContext).title(R.string.symbol_search)
+                    new MaterialDialog
+                            .Builder(mContext)
+                            .title(R.string.symbol_search)
                             .content(R.string.content_test)
                             .inputType(InputType.TYPE_CLASS_TEXT)
                             .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
@@ -157,6 +176,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             // are updated.
             GcmNetworkManager.getInstance(this).schedule(periodicTask);
         }
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
 
 
@@ -164,6 +184,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     public void onResume() {
         super.onResume();
         getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
 
     public void networkToast() {
@@ -191,10 +212,10 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         if (id == R.id.action_change_units) {
             // this is for changing stock changes from percent value to dollar value
@@ -206,11 +227,16 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     }
 
     @Override
+    protected void onPause() {
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This narrows the return to only the stocks that are most current.
         return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
-                new String[]{QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
-                        QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP},
+                MAIN_COLUMNS,
                 QuoteColumns.ISCURRENT + " = ?",
                 new String[]{"1"},
                 null);
@@ -227,4 +253,17 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         mCursorAdapter.swapCursor(null);
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @StockUtils.PrefErrorTypeName String s) {
+        int stringId;
+        if (s.equals(StockUtils.ERROR_TYPE_PREF)) {
+            switch (sharedPreferences.getInt(s, 0)) {
+                case (StockUtils.INVALID_STOCKS):
+                    stringId = R.string.text_error_invalid_stock_name;
+                    Toast.makeText(this, getString(stringId), Toast.LENGTH_LONG).show();
+                    StockUtils.setPreferenceError(this, StockUtils.NO_ERROR); //reset sharedpreference
+                    break;
+            }
+        }
+    }
 }
