@@ -11,7 +11,8 @@
     <string name="input_prefill"></string>
     <string name="network_toast">Uh-oh! This app requires an internet connection</string>
     <string name="title_activity_stock_detail">StockDetailActivity</string>
-    <string name="text_value_over_time">Value over time</string>
+    <string name="text_value_over_time">Value changed over time</string>
     <string name="text_stock_over_time">%s value over time</string>
     <string name="text_error_invalid_stock_name">Invalid stock name</string>
+    <string name="text_add_stock">Add stock</string>
 </resources>

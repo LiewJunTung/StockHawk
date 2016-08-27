@@ -63,10 +63,12 @@ public class StockDetailActivity extends AppCompatActivity implements LoaderMana
         float x = 1f;
         float bufferBidPrice = 0f;
         final ArrayList<Pair<Float, String>> list = new ArrayList<>();
+        boolean moved = false;
 
         while (cursor.moveToNext()){
-            if (cursor.getCount() > 10){
+            if (cursor.getCount() > 10 && !moved){
                 cursor.moveToPosition(cursor.getCount() - 10);
+                moved = true;
             }
             if (bufferBidPrice != cursor.getFloat(BID_PRICE)){
                 x += 1f;
@@ -76,7 +78,7 @@ public class StockDetailActivity extends AppCompatActivity implements LoaderMana
             }
         }
 
-        LineDataSet dataSet = new LineDataSet(entries, "Label");
+        LineDataSet dataSet = new LineDataSet(entries, selectedSymbol);
         LineData lineData = new LineData(dataSet);
         lineChartView.setData(lineData);
         lineData.setDrawValues(false);
