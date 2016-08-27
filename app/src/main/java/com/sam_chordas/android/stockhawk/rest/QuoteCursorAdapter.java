@@ -1,6 +1,7 @@
 package com.sam_chordas.android.stockhawk.rest;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -16,6 +17,7 @@ import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperAdapter;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperViewHolder;
+import com.sam_chordas.android.stockhawk.ui.MyStocksActivity;
 
 /**
  * Created by sam_chordas on 10/6/15.
@@ -46,8 +48,8 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor) {
-        String symbol = cursor.getString(cursor.getColumnIndex("symbol"));
-        String bidPrice = cursor.getString(cursor.getColumnIndex("bid_price"));
+        String symbol = cursor.getString(MyStocksActivity.SYMBOL_COLUMN);
+        String bidPrice = cursor.getString(MyStocksActivity.BIDPRICE_COLUMN);
         viewHolder.symbol.setText(symbol);
         viewHolder.symbol.setContentDescription(symbol);
 
@@ -55,7 +57,7 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         viewHolder.bidPrice.setContentDescription(bidPrice);
 
         int sdk = Build.VERSION.SDK_INT;
-        if (cursor.getInt(cursor.getColumnIndex("is_up")) == 1) {
+        if (cursor.getInt(MyStocksActivity.ISUP_COLUMN) == 1) {
             if (sdk < Build.VERSION_CODES.JELLY_BEAN) {
                 viewHolder.change.setBackgroundDrawable(
                         mContext.getResources().getDrawable(R.drawable.percent_change_pill_green));
@@ -74,9 +76,9 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         }
         String change;
         if (Utils.showPercent) {
-            change = cursor.getString(cursor.getColumnIndex("percent_change"));
+            change = cursor.getString(MyStocksActivity.PERCENT_CHANGE_COLUMN);
         } else {
-            change = cursor.getString(cursor.getColumnIndex("change"));
+            change = cursor.getString(MyStocksActivity.CHANGE_COLUMN);
         }
         viewHolder.change.setText(change);
         viewHolder.change.setContentDescription(change);
@@ -88,6 +90,7 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         c.moveToPosition(position);
         String symbol = c.getString(c.getColumnIndex(QuoteColumns.SYMBOL));
         mContext.getContentResolver().delete(QuoteProvider.Quotes.withSymbol(symbol), null, null);
+        mContext.sendBroadcast(new Intent(mContext.getString(R.string.action_stock_hawk_update)));
         notifyItemRemoved(position);
     }
 

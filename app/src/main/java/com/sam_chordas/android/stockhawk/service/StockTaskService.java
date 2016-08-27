@@ -12,6 +12,7 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
+import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.Utils;
@@ -31,7 +32,6 @@ import java.util.ArrayList;
  * and is used for the initialization and adding task as well.
  */
 public class StockTaskService extends GcmTaskService {
-    public static final String ACTION_STOCK_HAWK_UPDATE = "ACTION_STOCK_HAWK_UPDATE";
     private String LOG_TAG = StockTaskService.class.getSimpleName();
 
     private OkHttpClient client = new OkHttpClient();
@@ -65,8 +65,7 @@ public class StockTaskService extends GcmTaskService {
         try {
             // Base URL for the Yahoo query
             urlStringBuilder.append("https://query.yahooapis.com/v1/public/yql?q=");
-            urlStringBuilder.append(URLEncoder.encode("select * from yahoo.finance.quotes where symbol "
-                    + "in (", "UTF-8"));
+            urlStringBuilder.append(URLEncoder.encode("select * from yahoo.finance.quotes where symbol " + "in (", "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -129,13 +128,13 @@ public class StockTaskService extends GcmTaskService {
                         mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
                                 null, null);
                     }
-                    ArrayList arrayList = Utils.quoteJsonToContentVals(getResponse);
+                    ArrayList arrayList = Utils.quoteJsonToContentVals(getResponse, mContext);
                     if (arrayList != null && arrayList.size() > 0){
                         mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
                                 arrayList);
                         StockUtils.setPreferenceError(mContext, StockUtils.NO_ERROR);
                         //update widget
-                        Intent intent = new Intent(ACTION_STOCK_HAWK_UPDATE);
+                        Intent intent = new Intent(mContext.getString(R.string.action_stock_hawk_update));
                         mContext.sendBroadcast(intent);
                     } else {
                         StockUtils.setPreferenceError(mContext, StockUtils.INVALID_STOCKS);

@@ -13,8 +13,6 @@ import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.ui.MyStocksActivity;
 import com.sam_chordas.android.stockhawk.ui.StockDetailActivity;
 
-import static com.sam_chordas.android.stockhawk.service.StockTaskService.ACTION_STOCK_HAWK_UPDATE;
-
 /**
  * Popular Movie App
  * Created by jtlie on 8/25/2016.
@@ -49,7 +47,7 @@ public class StockWidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-        if (intent.getAction().equals(ACTION_STOCK_HAWK_UPDATE) || intent.getAction().equals("android.appwidget.action.APPWIDGET_UPDATE")){
+        if (intent.getAction().equals(context.getString(R.string.action_stock_hawk_update)) || intent.getAction().equals("android.appwidget.action.APPWIDGET_UPDATE")){
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
                     new ComponentName(context, getClass()));

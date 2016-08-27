@@ -51,11 +51,11 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP
     };
     private final static int ID_COLUMN = 0;
-    private final static int SYMBOL_COLUMN = 1;
-    private final static int BIDPRICE_COLUMN = 2;
-    private final static int PERCENT_CHANGE_COLUMN = 3;
-    private final static int CHANGE_COLUMN = 4;
-    private final static int ISUP_COLUMN = 5;
+    public final static int SYMBOL_COLUMN = 1;
+    public final static int BIDPRICE_COLUMN = 2;
+    public final static int PERCENT_CHANGE_COLUMN = 3;
+    public final static int CHANGE_COLUMN = 4;
+    public final static int ISUP_COLUMN = 5;
     boolean isConnected;
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
