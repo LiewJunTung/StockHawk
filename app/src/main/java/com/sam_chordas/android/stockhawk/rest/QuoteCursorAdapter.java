@@ -46,8 +46,14 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor) {
-        viewHolder.symbol.setText(cursor.getString(cursor.getColumnIndex("symbol")));
-        viewHolder.bidPrice.setText(cursor.getString(cursor.getColumnIndex("bid_price")));
+        String symbol = cursor.getString(cursor.getColumnIndex("symbol"));
+        String bidPrice = cursor.getString(cursor.getColumnIndex("bid_price"));
+        viewHolder.symbol.setText(symbol);
+        viewHolder.symbol.setContentDescription(symbol);
+
+        viewHolder.bidPrice.setText(bidPrice);
+        viewHolder.bidPrice.setContentDescription(bidPrice);
+
         int sdk = Build.VERSION.SDK_INT;
         if (cursor.getInt(cursor.getColumnIndex("is_up")) == 1) {
             if (sdk < Build.VERSION_CODES.JELLY_BEAN) {
@@ -66,11 +72,14 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
                         mContext.getResources().getDrawable(R.drawable.percent_change_pill_red));
             }
         }
+        String change;
         if (Utils.showPercent) {
-            viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("percent_change")));
+            change = cursor.getString(cursor.getColumnIndex("percent_change"));
         } else {
-            viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("change")));
+            change = cursor.getString(cursor.getColumnIndex("change"));
         }
+        viewHolder.change.setText(change);
+        viewHolder.change.setContentDescription(change);
     }
 
     @Override

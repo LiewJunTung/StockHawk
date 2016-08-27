@@ -77,23 +77,32 @@ public class StockWidgetRemoteViewService extends RemoteViewsService {
                         data == null || !data.moveToPosition(position)) {
                     return null;
                 }
+                String symbol = data.getString(SYMBOL_COLUMN);
+                String bidPrice = data.getString(BIDPRICE_COLUMN);
+                String change = Utils.showPercent?
+                        data.getString(PERCENT_CHANGE_COLUMN):
+                        data.getString(CHANGE_COLUMN);
+
                 RemoteViews views = new RemoteViews(getPackageName(),
                         R.layout.list_item_quote);
                 //set remote view
-                views.setTextViewText(R.id.stock_symbol, data.getString(SYMBOL_COLUMN));
-                views.setTextViewText(R.id.bid_price, data.getString(BIDPRICE_COLUMN));
-                if (Utils.showPercent){
-                    views.setTextViewText(R.id.change, data.getString(PERCENT_CHANGE_COLUMN));
-                } else {
-                    views.setTextViewText(R.id.change, data.getString(CHANGE_COLUMN));
-                }
+                views.setTextViewText(R.id.change, change);
+
+                views.setTextViewText(R.id.stock_symbol, symbol);
+                views.setTextColor(R.id.stock_symbol, getResources().getColor(R.color.white));
+
+                views.setTextViewText(R.id.bid_price, bidPrice);
+                views.setTextColor(R.id.bid_price, getResources().getColor(R.color.white));
+
+
                 if (data.getInt(ISUP_COLUMN) == 1){
                     views.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_green);
                 } else {
                     views.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_red);
                 }
+                views.setContentDescription(R.id.stock_list_item, getString(R.string.text_content_description, symbol, bidPrice, change));
                 Intent clickIntent = new Intent();
-                clickIntent.putExtra(StockDetailActivity.SELECTED_SYMBOL, data.getString(SYMBOL_COLUMN));
+                clickIntent.putExtra(StockDetailActivity.SELECTED_SYMBOL, symbol);
                 views.setOnClickFillInIntent(R.id.stock_list_item, clickIntent);
                 return views;
             }

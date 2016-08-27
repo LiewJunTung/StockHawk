@@ -5,14 +5,16 @@
 
     <string name="action_settings">Settings</string>
     <string name="action_change_units">Change Units</string>
-    <string name="symbol_search">Symbol Search</string>
+    <string name="symbol_search">Stock Symbol Search</string>
     <string name="content_test">Search for a Stock Symbol</string>
-    <string name="input_hint">FB</string>
-    <string name="input_prefill"></string>
+    <string name="input_hint">Stock names</string>
+    <string name="input_prefill" translatable="false"> </string>
     <string name="network_toast">Uh-oh! This app requires an internet connection</string>
     <string name="title_activity_stock_detail">StockDetailActivity</string>
     <string name="text_value_over_time">Value changed over time</string>
     <string name="text_stock_over_time">%s value over time</string>
     <string name="text_error_invalid_stock_name">Invalid stock name</string>
     <string name="text_add_stock">Add stock</string>
+    <string name="text_content_description" formatted="false">%s has a bid price of %s with change of %s</string>
+    <string name="text_stock_value_over_time">%s value over time</string>
 </resources>

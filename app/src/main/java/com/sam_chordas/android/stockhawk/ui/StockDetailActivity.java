@@ -77,7 +77,7 @@ public class StockDetailActivity extends AppCompatActivity implements LoaderMana
                 list.add(new Pair<>(x, cursor.getString(CREATED)));
             }
         }
-
+        lineChartView.setContentDescription(getString(R.string.text_stock_value_over_time, selectedSymbol));
         LineDataSet dataSet = new LineDataSet(entries, selectedSymbol);
         LineData lineData = new LineData(dataSet);
         lineChartView.setData(lineData);

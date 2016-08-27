@@ -31,6 +31,7 @@ import java.util.ArrayList;
  * and is used for the initialization and adding task as well.
  */
 public class StockTaskService extends GcmTaskService {
+    public static final String ACTION_STOCK_HAWK_UPDATE = "ACTION_STOCK_HAWK_UPDATE";
     private String LOG_TAG = StockTaskService.class.getSimpleName();
 
     private OkHttpClient client = new OkHttpClient();
@@ -134,8 +135,8 @@ public class StockTaskService extends GcmTaskService {
                                 arrayList);
                         StockUtils.setPreferenceError(mContext, StockUtils.NO_ERROR);
                         //update widget
-                        Intent intent = new Intent();
-
+                        Intent intent = new Intent(ACTION_STOCK_HAWK_UPDATE);
+                        mContext.sendBroadcast(intent);
                     } else {
                         StockUtils.setPreferenceError(mContext, StockUtils.INVALID_STOCKS);
                     }
