@@ -10,6 +10,8 @@ import android.widget.RemoteViewsService;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.sam_chordas.android.stockhawk.rest.Utils;
+import com.sam_chordas.android.stockhawk.ui.StockDetailActivity;
 
 /**
  * Popular Movie App
@@ -17,6 +19,8 @@ import com.sam_chordas.android.stockhawk.data.QuoteProvider;
  */
 
 public class StockWidgetRemoteViewService extends RemoteViewsService {
+    public static final String LOG_TAG = StockWidgetRemoteViewService.class.getSimpleName();
+
     private static final String[] MAIN_COLUMNS = {
             QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
             QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP
@@ -74,33 +78,42 @@ public class StockWidgetRemoteViewService extends RemoteViewsService {
                     return null;
                 }
                 RemoteViews views = new RemoteViews(getPackageName(),
-                        R.layout.widget_view);
+                        R.layout.list_item_quote);
                 //set remote view
                 views.setTextViewText(R.id.stock_symbol, data.getString(SYMBOL_COLUMN));
                 views.setTextViewText(R.id.bid_price, data.getString(BIDPRICE_COLUMN));
-                if (data.getInt(ISUP_COLUMN) == 1){
-                    views.setInt(R.id.change, "setBackgroundColor", getResources().getDrawable(R.drawable.percent_change_pill_green));
+                if (Utils.showPercent){
+                    views.setTextViewText(R.id.change, data.getString(PERCENT_CHANGE_COLUMN));
                 } else {
-
+                    views.setTextViewText(R.id.change, data.getString(CHANGE_COLUMN));
                 }
-                views.setTextViewText(R.id.change, data.getString(PERCENT_CHANGE_COLUMN));
-
+                if (data.getInt(ISUP_COLUMN) == 1){
+                    views.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_green);
+                } else {
+                    views.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_red);
+                }
+                Intent clickIntent = new Intent();
+                clickIntent.putExtra(StockDetailActivity.SELECTED_SYMBOL, data.getString(SYMBOL_COLUMN));
+                views.setOnClickFillInIntent(R.id.stock_list_item, clickIntent);
                 return views;
             }
 
             @Override
             public RemoteViews getLoadingView() {
-                return null;
+                return new RemoteViews(getPackageName(), R.layout.widget_view);
             }
 
             @Override
             public int getViewTypeCount() {
-                return 0;
+                return 1;
             }
 
             @Override
             public long getItemId(int position) {
-                return 0;
+                if (data.moveToPosition(position)){
+                    return data.getInt(ID_COLUMN);
+                }
+                return position;
             }
 
             @Override

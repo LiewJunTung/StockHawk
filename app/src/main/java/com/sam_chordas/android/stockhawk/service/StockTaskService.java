@@ -2,6 +2,7 @@ package com.sam_chordas.android.stockhawk.service;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -132,6 +133,9 @@ public class StockTaskService extends GcmTaskService {
                         mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
                                 arrayList);
                         StockUtils.setPreferenceError(mContext, StockUtils.NO_ERROR);
+                        //update widget
+                        Intent intent = new Intent();
+
                     } else {
                         StockUtils.setPreferenceError(mContext, StockUtils.INVALID_STOCKS);
                     }
